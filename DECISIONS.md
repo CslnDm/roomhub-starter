@@ -12,7 +12,9 @@ _(your answer here)_
 ## 2. Result instead of an exception
 Why is `Result` a better choice than an exception for "the room is occupied"? What happens in your code when an `Error` is returned?
 
-_(your answer here)_
+1. Din experienta de la laborator, nu umplem stakul cu diverse exceptii. 
+Conflictele apar foarte des si este normal sa se intample asta.
+2. O exceprie ar trece prin mult mai multe straturi pana a fi prinsa (poate sari unele straturi) in timp ce folosint Resultc eroarea noastra trece pas cu pas.
 
 ## 3. Who knows about EF Core?
 Which classes in your project know about EF Core and which do not? What do you gain and what do you pay with Repository + Unit of Work?

@@ -53,3 +53,60 @@ Content-Type: application/json
 POST {{baseUrl}}/api/bookings/{{bookingId}}/cancel
 
 ### 8. Add your own requests here for the rules in ASSIGNMENT.md
+
+### 9. Booking in the past (expected: 400)
+POST {{baseUrl}}/api/rooms/{{roomId}}/bookings
+Content-Type: application/json
+
+{
+  "bookedBy": "ana",
+  "startUtc": "2020-01-10T10:00:00Z",
+  "endUtc": "2020-01-10T12:00:00Z",
+  "attendees": 2
+}
+
+### 10. Booking longer than 4 hours (expected: 400)
+POST {{baseUrl}}/api/rooms/{{roomId}}/bookings
+Content-Type: application/json
+
+{
+  "bookedBy": "ana",
+  "startUtc": "2030-01-12T10:00:00Z",
+  "endUtc": "2030-01-12T15:00:00Z",
+  "attendees": 2
+}
+
+### 11. Booking exactly 4 hours (expected: 201)
+# @name createFourHourBooking
+POST {{baseUrl}}/api/rooms/{{roomId}}/bookings
+Content-Type: application/json
+
+{
+  "bookedBy": "ana",
+  "startUtc": "2030-01-13T10:00:00Z",
+  "endUtc": "2030-01-13T14:00:00Z",
+  "attendees": 2
+}
+
+### 12. Booking starting exactly now (expected: 201 when sent with a fixed current UTC timestamp)
+# Replace both dates with the same current UTC timestamp immediately before sending.
+# @name createNowBooking
+POST {{baseUrl}}/api/rooms/{{roomId}}/bookings
+Content-Type: application/json
+
+{
+  "bookedBy": "ana",
+  "startUtc": "2030-01-14T10:00:00Z",
+  "endUtc": "2030-01-14T12:00:00Z",
+  "attendees": 2
+}
+
+### 13. Double cancel (expected: 409)
+POST {{baseUrl}}/api/bookings/{{bookingId}}/cancel
+
+### 14. API version from query string (expected: 200)
+GET {{baseUrl}}/api/rooms/{{roomId}}?api-version=1.0
+
+### 15. API version from header (expected: 200)
+GET {{baseUrl}}/api/rooms/{{roomId}}
+X-Api-Version: 1.0

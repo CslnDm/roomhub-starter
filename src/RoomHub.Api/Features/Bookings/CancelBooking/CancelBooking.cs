@@ -1,3 +1,4 @@
+using RoomHub.Api.Domain.Bookings;
 using RoomHub.Api.Domain.Common;
 using RoomHub.Api.Features.Common;
 using RoomHub.Api.Models;
@@ -5,16 +6,20 @@ using RoomHub.Api.Repositories;
 
 namespace RoomHub.Api.Features.Bookings.CancelBooking;
 
-public sealed class CancelBookingHandler(BookingRepository bookings)
-{
-    public Result<bool> Handle(Guid id)
-    {
-        var booking = bookings.Get(id);
-        if (booking is null)
-            return Error.NotFound("BookingNotFound", "The booking does not exist.");
+public sealed record CancelBookingCommand(Guid Id);
 
-        booking.Status = BookingStatus.Cancelled;
-        return true;
+public sealed class CancelBookingHandler(BookingRepository bookings)
+    : ICommandHandler<CancelBookingCommand, Unit>
+{
+    public Task<Result<Unit>> Handle(
+        CancelBookingCommand command,
+        CancellationToken cancellationToken = default)
+    {
+        var booking = bookings.Get(command.Id);
+        if (booking is null)
+            return Task.FromResult<Result<Unit>>(BookingErrors.NotFound);
+
+        return Task.FromResult(booking.Cancel());
     }
 }
 
@@ -22,13 +27,15 @@ public static class CancelBookingEndpoint
 {
     public static void MapCancelBooking(this IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/bookings/{id:guid}/cancel", (Guid id, CancelBookingHandler handler) =>
+        app.MapPost("/api/bookings/{id:guid}/cancel", async (
+            Guid id,
+            ICommandHandler<CancelBookingCommand, Unit> handler,
+            CancellationToken cancellationToken) =>
         {
-            var result = handler.Handle(id);
-            if (result.IsFailure)
-                return result.Error.ToProblemDetails();
-
-            return Results.NoContent();
+            var result = await handler.Handle(
+                new CancelBookingCommand(id),
+                cancellationToken);
+            return result.Match(_ => Results.NoContent());
         }).WithTags("Bookings");
     }
 }

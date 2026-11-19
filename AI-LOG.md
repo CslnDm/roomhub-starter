@@ -17,3 +17,15 @@ Write down, in order, what you asked the AI. It is not a punishment: a missing o
 
 |---|---|---|---|
 |2min |Claude: generarea unui skill ce verifica implementarea sau problemele implementarii cerute de la un Punct specific din ASSIGMENT.md |Totul |Ca cerinta care vreau sa fie modificata sa o introduc eu si sa ma intrebe fisierele pe care urmeaza sa fie analizate|
+
+|---|---|---|---|
+| 4 min |  Verificare daca Punctul A din cerinta este indeplinit| Lista de probleme in implementare | Unele probleme care nu sunt relevante inca (dee exemplu testele, o sa le implementez dupa) |
+
+|---|---|---|---|
+| 3 min | Adauga time provider | implementarea initiala | am adaugat validarea pentru a respecta si R6 |
+
+|---|---|---|---|
+| 1-2 min | Schimba toti public set in private | Am pastrat toate modificarile, a schimbat doar ce trebuie | Nimic |
+
+|---|---|---|---|
+| 6 min | implementare ICommandHandler, IQueryhandler | Am pastrat a 2-a implementare implementare | Prima implementare, am imbunatatit promtul dand unul mai precis (skill generat de Claude) |

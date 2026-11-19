@@ -8,11 +8,4 @@ public sealed record Error(string Code, string Message, ErrorType Type)
 
     public static Error Conflict(string code, string message) => new(code, message, ErrorType.Conflict);
 
-    public int StatusCode => Type switch
-    {
-        ErrorType.Validation => StatusCodes.Status400BadRequest,
-        ErrorType.NotFound => StatusCodes.Status404NotFound,
-        ErrorType.Conflict => StatusCodes.Status409Conflict,
-        _ => throw new ArgumentOutOfRangeException(nameof(Type), Type, "Unknown error type.")
-    };
 }

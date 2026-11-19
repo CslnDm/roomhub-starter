@@ -1,11 +1,14 @@
+using RoomHub.Api.Domain.Bookings;
 using RoomHub.Api.Domain.Common;
+using RoomHub.Api.Domain.Rooms;
 using RoomHub.Api.Features.Common;
 using RoomHub.Api.Models;
 using RoomHub.Api.Repositories;
 
 namespace RoomHub.Api.Features.Bookings.CreateBooking;
 
-public sealed record CreateBookingRequest(
+public sealed record CreateBookingCommand(
+    Guid RoomId,
     string? BookedBy,
     DateTime StartUtc,
     DateTime EndUtc,
@@ -13,45 +16,39 @@ public sealed record CreateBookingRequest(
 
 public sealed record BookingCreatedResponse(Guid Id, Guid RoomId, string Status);
 
-public sealed class CreateBookingHandler(RoomRepository rooms, BookingRepository bookings)
+public sealed class CreateBookingHandler(
+    RoomRepository rooms,
+    BookingRepository bookings,
+    TimeProvider clock)
+    : ICommandHandler<CreateBookingCommand, Booking>
 {
-    public Result<Booking> Handle(Guid roomId, CreateBookingRequest request)
+    public Task<Result<Booking>> Handle(
+        CreateBookingCommand command,
+        CancellationToken cancellationToken = default)
     {
-        var room = rooms.Get(roomId);
+        var room = rooms.Get(command.RoomId);
         if (room is null)
-            return Error.NotFound("RoomNotFound", "The room does not exist.");
+            return Task.FromResult<Result<Booking>>(RoomErrors.NotFound);
 
-        if (string.IsNullOrWhiteSpace(request.BookedBy))
-            return Error.Validation("InvalidBookedBy", "BookedBy is required.");
+        var result = Booking.Create(
+            room,
+            command.BookedBy,
+            command.StartUtc,
+            command.EndUtc,
+            command.Attendees,
+            clock.GetUtcNow().UtcDateTime);
 
-        if (request.EndUtc <= request.StartUtc)
-            return Error.Validation("InvalidRange", "The end must be after the start.");
+        if (result.IsFailure)
+            return Task.FromResult(result);
 
-        if (request.Attendees <= 0)
-            return Error.Validation("InvalidAttendees", "Attendees must be positive.");
-
-        if (request.Attendees > room.Capacity)
-            return Error.Validation("AttendeesExceedCapacity", "The room does not have enough seats.");
-
-        foreach (var existing in bookings.ListForRoom(roomId))
+        foreach (var existing in bookings.ListForRoom(command.RoomId))
         {
-            if (existing.StartUtc <= request.EndUtc && request.StartUtc <= existing.EndUtc)
-                return Error.Conflict("RoomOccupied", "The room is occupied in this interval.");
+            if (existing.StartUtc <= command.EndUtc && command.StartUtc <= existing.EndUtc)
+                return Task.FromResult<Result<Booking>>(BookingErrors.RoomOccupied);
         }
 
-        var booking = new Booking
-        {
-            Id = Guid.NewGuid(),
-            RoomId = roomId,
-            BookedBy = request.BookedBy.Trim(),
-            StartUtc = request.StartUtc,
-            EndUtc = request.EndUtc,
-            Attendees = request.Attendees,
-            Status = BookingStatus.Active
-        };
-
-        bookings.Add(booking);
-        return booking;
+        bookings.Add(result.Value);
+        return Task.FromResult(result);
     }
 }
 
@@ -59,18 +56,29 @@ public static class CreateBookingEndpoint
 {
     public static void MapCreateBooking(this IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/rooms/{roomId:guid}/bookings",
-            (Guid roomId, CreateBookingRequest request, CreateBookingHandler handler) =>
-            {
-                var result = handler.Handle(roomId, request);
-                if (result.IsFailure)
-                    return result.Error.ToProblemDetails();
-
-                var booking = result.Value;
-                return Results.Created(
-                    $"/api/bookings/{booking.Id}",
-                    new BookingCreatedResponse(
-                        booking.Id, booking.RoomId, booking.Status.ToString()));
-            }).WithTags("Bookings");
+        app.MapPost("/api/rooms/{roomId:guid}/bookings", async (
+            Guid roomId,
+            CreateBookingRequest request,
+            ICommandHandler<CreateBookingCommand, Booking> handler,
+            CancellationToken cancellationToken) =>
+        {
+            var command = new CreateBookingCommand(
+                roomId,
+                request.BookedBy,
+                request.StartUtc,
+                request.EndUtc,
+                request.Attendees);
+            var result = await handler.Handle(command, cancellationToken);
+            return result.Match(booking => Results.Created(
+                $"/api/bookings/{booking.Id}",
+                new BookingCreatedResponse(
+                    booking.Id, booking.RoomId, booking.Status.ToString())));
+        }).WithTags("Bookings");
     }
 }
+
+public sealed record CreateBookingRequest(
+    string? BookedBy,
+    DateTime StartUtc,
+    DateTime EndUtc,
+    int Attendees);

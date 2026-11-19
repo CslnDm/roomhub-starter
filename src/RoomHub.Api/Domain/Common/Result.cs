@@ -27,4 +27,9 @@ public sealed class Result<T>
     public static implicit operator Result<T>(T value) => Success(value);
 
     public static implicit operator Result<T>(Error error) => Failure(error);
+
+    public TResult Match<TResult>(Func<T, TResult> onSuccess, Func<Error, TResult> onFailure)
+    {
+        return IsSuccess ? onSuccess(Value) : onFailure(Error);
+    }
 }
