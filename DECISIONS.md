@@ -27,7 +27,9 @@ _(your answer here)_
 ## 5. What you rejected from what the AI gave you
 Give a concrete example of code or an idea proposed by the AI that you corrected or rejected, and say why.
 
-_(your answer here)_
+Am dat reject la propunerea de implementare a Errors.cs, ProblemDetailsExceptions.cs si Result.cs. In propunerea de implementare Error.cs proprietatea StatusCode foloseste StatusCodes din ASP.NET, cu alte cuvinte a adaugat lucruri ce nu trebuie regasite in Domain. Maparea la coduri HTTP trebuie realizata in alta parte.
+Nu se valideaza Result<T>.Value, nu avem nici o exceptie ce sa ne informeze/anunte de greseala, noi primeam doar null.
+Continea prea mult cod in plus dupa parerea mea, metode in plus sau care sunt dublate in proiect precum "ToProblemDetails<T>(Result<T> result)".
 
 ## 6. If you had 30 more minutes
 What would you improve and what risk did you leave in the project?

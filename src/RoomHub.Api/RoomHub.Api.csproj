@@ -6,4 +6,14 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="Domain\Common\" />
+      <Folder Include="Features\Bookings\CancelBooking\" />
+      <Folder Include="Features\Bookings\CreateBooking\" />
+      <Folder Include="Features\Bookings\GetBooking\" />
+      <Folder Include="Features\Common\" />
+      <Folder Include="Features\Rooms\CreateRoom\" />
+      <Folder Include="Features\Rooms\GetRoom\" />
+    </ItemGroup>
+
 </Project>
