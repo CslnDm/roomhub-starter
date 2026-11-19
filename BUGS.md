@@ -11,4 +11,6 @@ Fill it in yourself, in your own words. There is no required number: what counts
 | R5 | Features/Bookings/CreateBooking/CreateBooking.cs | AI - diagnoza initiala | Am adaugat Time provider |
 | R6 | Features/Bookings/CreateBooking/CreateBooking.cs, CreateBookingHandler.Handle  | Test | Am adaugat validarea duratei maxime |\
 | Domeniul avea public setters | Booking (line 19 - 25), Rooms (line 11-13) | reading_ | _am schimbat in privat |
-
+| R7 | Features/Bookings/CreateBooking/CreateBooking.csline 46 | AI | Conditia <= |
+| R7 | Features/Bookings/CreateBooking/CreateBooking.cs | AI | Verificarea la conditia  existing.Status == BookingStatus.Active |
+| _(fill in)_ | _(fill in)_ | _(fill in)_ | _(fill in)_ |

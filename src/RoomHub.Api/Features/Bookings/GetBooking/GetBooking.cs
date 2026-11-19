@@ -2,7 +2,6 @@ using RoomHub.Api.Domain.Bookings;
 using RoomHub.Api.Domain.Common;
 using RoomHub.Api.Features.Common;
 using RoomHub.Api.Models;
-using RoomHub.Api.Repositories;
 
 namespace RoomHub.Api.Features.Bookings.GetBooking;
 
@@ -17,19 +16,26 @@ public sealed record BookingResponse(
     int Attendees,
     string Status);
 
-public sealed class GetBookingHandler(BookingRepository bookings)
+public sealed class GetBookingHandler(IBookingRepository bookings)
     : IQueryHandler<GetBookingQuery, Booking>
 {
     public Task<Result<Booking>> Handle(
         GetBookingQuery query,
         CancellationToken cancellationToken = default)
     {
-        var booking = bookings.Get(query.Id);
+        return GetAsync(query.Id, cancellationToken);
+    }
+
+    private async Task<Result<Booking>> GetAsync(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var booking = await bookings.GetAsync(id, cancellationToken);
         var result = booking is null
             ? BookingErrors.NotFound
             : Result<Booking>.Success(booking);
 
-        return Task.FromResult(result);
+        return result;
     }
 }
 

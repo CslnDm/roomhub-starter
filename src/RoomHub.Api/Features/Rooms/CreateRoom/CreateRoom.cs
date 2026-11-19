@@ -2,7 +2,6 @@ using RoomHub.Api.Domain.Common;
 using RoomHub.Api.Domain.Rooms;
 using RoomHub.Api.Features.Common;
 using RoomHub.Api.Models;
-using RoomHub.Api.Repositories;
 
 namespace RoomHub.Api.Features.Rooms.CreateRoom;
 
@@ -10,7 +9,9 @@ public sealed record CreateRoomCommand(string? Name, int Capacity);
 
 public sealed record RoomResponse(Guid Id, string Name, int Capacity);
 
-public sealed class CreateRoomHandler(RoomRepository rooms)
+public sealed class CreateRoomHandler(
+    IRoomRepository rooms,
+    IUnitOfWork unitOfWork)
     : ICommandHandler<CreateRoomCommand, Room>
 {
     public Task<Result<Room>> Handle(
@@ -19,9 +20,20 @@ public sealed class CreateRoomHandler(RoomRepository rooms)
     {
         var result = Room.Create(command.Name, command.Capacity);
         if (result.IsSuccess)
+        {
             rooms.Add(result.Value);
+            return SaveAsync(result, cancellationToken);
+        }
 
         return Task.FromResult(result);
+    }
+
+    private async Task<Result<Room>> SaveAsync(
+        Result<Room> result,
+        CancellationToken cancellationToken)
+    {
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        return result;
     }
 }
 

@@ -3,7 +3,6 @@ using RoomHub.Api.Domain.Common;
 using RoomHub.Api.Domain.Rooms;
 using RoomHub.Api.Features.Common;
 using RoomHub.Api.Models;
-using RoomHub.Api.Repositories;
 
 namespace RoomHub.Api.Features.Bookings.CreateBooking;
 
@@ -17,18 +16,19 @@ public sealed record CreateBookingCommand(
 public sealed record BookingCreatedResponse(Guid Id, Guid RoomId, string Status);
 
 public sealed class CreateBookingHandler(
-    RoomRepository rooms,
-    BookingRepository bookings,
+    IRoomRepository rooms,
+    IBookingRepository bookings,
+    IUnitOfWork unitOfWork,
     TimeProvider clock)
     : ICommandHandler<CreateBookingCommand, Booking>
 {
-    public Task<Result<Booking>> Handle(
+    public async Task<Result<Booking>> Handle(
         CreateBookingCommand command,
         CancellationToken cancellationToken = default)
     {
-        var room = rooms.Get(command.RoomId);
+        var room = await rooms.GetAsync(command.RoomId, cancellationToken);
         if (room is null)
-            return Task.FromResult<Result<Booking>>(RoomErrors.NotFound);
+            return RoomErrors.NotFound;
 
         var result = Booking.Create(
             room,
@@ -39,16 +39,18 @@ public sealed class CreateBookingHandler(
             clock.GetUtcNow().UtcDateTime);
 
         if (result.IsFailure)
-            return Task.FromResult(result);
+            return result;
 
-        foreach (var existing in bookings.ListForRoom(command.RoomId))
-        {
-            if (existing.StartUtc <= command.EndUtc && command.StartUtc <= existing.EndUtc)
-                return Task.FromResult<Result<Booking>>(BookingErrors.RoomOccupied);
-        }
+        if (await bookings.HasOverlapAsync(
+                command.RoomId,
+                command.StartUtc,
+                command.EndUtc,
+                cancellationToken))
+            return BookingErrors.RoomOccupied;
 
         bookings.Add(result.Value);
-        return Task.FromResult(result);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        return result;
     }
 }
 

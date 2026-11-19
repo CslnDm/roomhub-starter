@@ -29,3 +29,15 @@ Write down, in order, what you asked the AI. It is not a punishment: a missing o
 
 |---|---|---|---|
 | 6 min | implementare ICommandHandler, IQueryhandler | Am pastrat a 2-a implementare implementare | Prima implementare, am imbunatatit promtul dand unul mai precis (skill generat de Claude) |
+
+|---|---|---|---|
+| 1-2 min | realizarea unui nou promt/skill pentru a verifica si implementa punctul C | Promtul pentru a testa implementarea ce urmeaza | un step 0 pentru a scanace repo exista, si ce bugs legate de R7 gaseste, apoi dupa prima iteratie au mai fost adaugate cateva buguri deja cunoscute|
+
+|---|---|---|---|
+| 1 min faza 1, 1-2 min  faza 1 nr.2 de verificare, 3 min faza de rezolvare,  | Copilot: Skillul anterior | prima data am pastrat doar lista de bug-uri, a 2-a oara am pastrat tot | Nimic |
+
+|---|---|---|---|
+|1 min |Adaptarea/creare dupa exemplul skillului de CR a unui nou skil pentru verificarea cerintelor R1-R11 |Noul skill|Nimic|
+
+|---|---|---|---|
+|2-3 min |Claude: Verificarea logicii utilizant skillul anterior (am incarcat o parte din fisierele mai importante ) |Nimic (prea costisitor), raspunsul a fost un zip |totul rejected, am actualizat specificatiile sa imi dea DOAR lista de probleme |
