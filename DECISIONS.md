@@ -24,7 +24,7 @@ _(your answer here)_
 ## 4. The flow of a request
 Draw in text (ASCII arrows) the path of a `POST /api/rooms/{roomId}/bookings` request through your project, with the **real** names of files and classes, from the endpoint to the database.
 
-_(your answer here)_
+
 
 ## 5. What you rejected from what the AI gave you
 Give a concrete example of code or an idea proposed by the AI that you corrected or rejected, and say why.
@@ -36,4 +36,5 @@ Continea prea mult cod in plus dupa parerea mea, metode in plus sau care sunt du
 ## 6. If you had 30 more minutes
 What would you improve and what risk did you leave in the project?
 
-_(your answer here)_
+As fi adaugat testele pe care nu le-am implementat. As fi adaugat versionarea (se putea de facut foarte rapid)
+Verificarea intregului proiect de bugs si respectarea tuturor cerintelor.

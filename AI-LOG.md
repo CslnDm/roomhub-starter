@@ -41,3 +41,6 @@ Write down, in order, what you asked the AI. It is not a punishment: a missing o
 
 |---|---|---|---|
 |2-3 min |Claude: Verificarea logicii utilizant skillul anterior (am incarcat o parte din fisierele mai importante ) |Nimic (prea costisitor), raspunsul a fost un zip |totul rejected, am actualizat specificatiile sa imi dea DOAR lista de probleme |
+
+|---|---|---|---|
+|---|Rezolvarea bug-urilor |---|---|

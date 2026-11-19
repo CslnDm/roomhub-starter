@@ -13,4 +13,7 @@ Fill it in yourself, in your own words. There is no required number: what counts
 | Domeniul avea public setters | Booking (line 19 - 25), Rooms (line 11-13) | reading_ | _am schimbat in privat |
 | R7 | Features/Bookings/CreateBooking/CreateBooking.csline 46 | AI | Conditia <= |
 | R7 | Features/Bookings/CreateBooking/CreateBooking.cs | AI | Verificarea la conditia  existing.Status == BookingStatus.Active |
+| R9 | repository | AI_ | metoda de count si verificarea in handler |
+| R10 | Room si Booking | AI | Adaugarea regulii de durata |
+| _(fill in)_ | _(fill in)_ | _(fill in)_ | _(fill in)_ |
 | _(fill in)_ | _(fill in)_ | _(fill in)_ | _(fill in)_ |
