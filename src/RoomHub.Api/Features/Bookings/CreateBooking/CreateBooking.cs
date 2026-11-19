@@ -48,6 +48,16 @@ public sealed class CreateBookingHandler(
                 cancellationToken))
             return BookingErrors.RoomOccupied;
 
+        var dayStartUtc = command.StartUtc.Date;
+        var dayEndUtc = dayStartUtc.AddDays(1);
+        var activeCount = await bookings.CountActiveByUserOnDayAsync(
+            command.BookedBy!.Trim(),
+            dayStartUtc,
+            dayEndUtc,
+            cancellationToken);
+        if (activeCount >= 2)
+            return BookingErrors.DailyLimitExceeded;
+
         bookings.Add(result.Value);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return result;

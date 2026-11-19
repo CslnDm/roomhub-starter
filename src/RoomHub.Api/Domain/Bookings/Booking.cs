@@ -48,8 +48,11 @@ public sealed class Booking
         };
     }
 
-    public Result<Unit> Cancel()
+    public Result<Unit> Cancel(DateTime nowUtc)
     {
+        if (StartUtc - nowUtc < TimeSpan.FromMinutes(60))
+            return BookingErrors.CancelTooLate;
+
         if (Status == BookingStatus.Cancelled)
             return BookingErrors.AlreadyCancelled;
 
@@ -80,8 +83,10 @@ public sealed class Booking
         if (startUtc < nowUtc)
             return BookingErrors.StartsInPast;
 
-        if (endUtc - startUtc > TimeSpan.FromHours(4))
-            return BookingErrors.TooLong;
+        if (endUtc - startUtc > room.MaxBookingDuration)
+            return room.Capacity > 10
+                ? BookingErrors.TooLongForLargeRoom
+                : BookingErrors.TooLong;
 
         return null;
     }

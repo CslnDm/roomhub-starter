@@ -21,5 +21,17 @@ public sealed class SqliteBookingRepository(RoomHubDbContext context) : IBooking
                 && startUtc < b.EndUtc,
             cancellationToken);
 
+    public Task<int> CountActiveByUserOnDayAsync(
+        string bookedBy,
+        DateTime dayStartUtc,
+        DateTime dayEndUtc,
+        CancellationToken cancellationToken) =>
+        context.Bookings.CountAsync(
+            b => b.Status == BookingStatus.Active
+                && b.BookedBy == bookedBy
+                && b.StartUtc >= dayStartUtc
+                && b.StartUtc < dayEndUtc,
+            cancellationToken);
+
     public void Add(Booking booking) => context.Bookings.Add(booking);
 }

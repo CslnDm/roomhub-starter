@@ -9,7 +9,8 @@ public sealed record CancelBookingCommand(Guid Id);
 
 public sealed class CancelBookingHandler(
     IBookingRepository bookings,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    TimeProvider clock)
     : ICommandHandler<CancelBookingCommand, Unit>
 {
     public async Task<Result<Unit>> Handle(
@@ -20,7 +21,7 @@ public sealed class CancelBookingHandler(
         if (booking is null)
             return BookingErrors.NotFound;
 
-        var result = booking.Cancel();
+        var result = booking.Cancel(clock.GetUtcNow().UtcDateTime);
         if (result.IsFailure)
             return result;
 

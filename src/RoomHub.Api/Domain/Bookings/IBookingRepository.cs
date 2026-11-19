@@ -12,5 +12,11 @@ public interface IBookingRepository
         DateTime endUtc,
         CancellationToken cancellationToken);
 
+    Task<int> CountActiveByUserOnDayAsync(
+        string bookedBy,
+        DateTime dayStartUtc,
+        DateTime dayEndUtc,
+        CancellationToken cancellationToken);
+
     void Add(Booking booking);
 }

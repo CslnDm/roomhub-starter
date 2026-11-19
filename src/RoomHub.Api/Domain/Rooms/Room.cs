@@ -11,6 +11,10 @@ namespace RoomHub.Api.Domain.Rooms
         public Guid Id { get; private set; }
         public string Name { get; private set; } = string.Empty;
         public int Capacity { get; private set; }
+        public TimeSpan MaxBookingDuration =>
+            Capacity > 10
+                ? TimeSpan.FromHours(2)
+                : TimeSpan.FromHours(4);
 
         public static Result<Room> Create(string? name, int capacity)
         {
